@@ -1,0 +1,112 @@
+package project2;
+
+public class cell {
+	int[] pixelInCell=new int[64];         //the gray values of pixels in cell
+	int[][] sortpixels=new int[8][8];     //the 2-D array sorted gray values of pixels in cell
+	double[] angleInCell=new double[64];         //the actual angles of pixels in cells.
+	double[][] anglepixel=new double[8][8];     //the sorted actual angles of pixels in cells.
+	int[] angle_cell=new int[9];            //histogram of angle quantization in 9 bins.
+	int[] magInCell=new int[64];           //magnitude in pixels for every cell.
+	int[][] mag=new int[8][8];            //the sorted magnitude.
+	double[] vote_cell=new double[9];      //the weighted vote of cell in 9 bins
+
+	cell(){
+		for(int y=0;y<64;y++){
+			pixelInCell[y]=0;
+			magInCell[y]=0;
+		}
+	}
+	void setcells(int a,int y){ //a is parameter, y is the index of pixelInCell.Assign the gray value into all cells.
+		pixelInCell[y]=a;
+	}
+	void setmags(int a,int y){ //a is parameter, y is the index of pixelInCell.Assign the weighted vote into all cells.
+		magInCell[y]=a;
+	}
+	void setangle(double a,int y){ //a is parameter, y is the index of pixelInCell.Assign the angles into all cells.
+		angleInCell[y]=a;
+	}
+	void printcells(){          //print every cell's gray value of pixels.
+		for(int y=0;y<64;y++){
+			System.out.print(y+":"+pixelInCell[y]+" ");
+		}
+		System.out.println();
+	}
+	void sortcells(){           //let every pixel's gray value of cells stored as 2-D array[r][c].
+		int k=0;
+		for(int r=0;r<8;r++){
+			for(int c=0;c<8;c++){
+				sortpixels[r][c]=pixelInCell[k];
+				k++;
+			}
+		}
+	}
+	void sortangles(){           //let every pixel's gray value of cells stored as 2-D array[r][c].
+		int k=0;
+		for(int r=0;r<8;r++){
+			for(int c=0;c<8;c++){
+				anglepixel[r][c]=angleInCell[k];
+				k++;
+			}
+		}
+	}
+	void sortmag(){           //let every pixel's weighted vote of cells stored as 2-D array[r][c].
+		int k=0;
+		for(int r=0;r<8;r++){
+			for(int c=0;c<8;c++){
+				mag[r][c]=magInCell[k];
+				k++;
+			}
+		}
+	}
+	void printsort(){           //print the sorted cells to check the gray value of pixels in cells.
+		for(int r=0;r<8;r++){
+			System.out.println();
+			for(int c=0;c<8;c++){
+				System.out.print(sortpixels[r][c]+" ");
+			}
+		}
+	}
+	void calculate_vote(){    //calculate the weighted vote of individual edge pixels.
+		for(int i=0;i<8;i++){
+			for(int j=0;j<8;j++){
+				if(anglepixel[i][j]>=-10&&anglepixel[i][j]<10) {
+					vote_cell[0]=(1-(10-anglepixel[i][j])/20)*mag[i][j];
+					vote_cell[8]=(1-(10+anglepixel[i][j])/20)*mag[i][j];
+				}
+				else if(anglepixel[i][j]>=10&&anglepixel[i][j]<30) {
+					vote_cell[1]=(1-(30-anglepixel[i][j])/20)*mag[i][j];
+					vote_cell[0]=(1-(anglepixel[i][j]-10)/20)*mag[i][j];
+				}
+				else if(anglepixel[i][j]>=30&&anglepixel[i][j]<50) {
+					vote_cell[2]=(1-(50-anglepixel[i][j])/20)*mag[i][j];
+					vote_cell[1]=(1-(anglepixel[i][j]-30)/20)*mag[i][j];
+				}
+				else if(anglepixel[i][j]>=50&&anglepixel[i][j]<70) {
+					vote_cell[3]=(1-(70-anglepixel[i][j])/20)*mag[i][j];
+					vote_cell[2]=(1-(anglepixel[i][j]-50)/20)*mag[i][j];
+				}
+				else if(anglepixel[i][j]>=70&&anglepixel[i][j]<=90) {
+					vote_cell[4]=(1-(90-anglepixel[i][j])/20)*mag[i][j];
+					vote_cell[3]=(1-(anglepixel[i][j]-70)/20)*mag[i][j];
+				}
+				else if(anglepixel[i][j]<-10&&anglepixel[i][j]>=-30) {
+					vote_cell[8]=(1-(-10-anglepixel[i][j])/20)*mag[i][j];
+					vote_cell[7]=(1-(anglepixel[i][j]-(-30))/20)*mag[i][j];
+				}
+				else if(anglepixel[i][j]<-30&&anglepixel[i][j]>=-50) {
+					vote_cell[7]=(1-(-30-anglepixel[i][j])/20)*mag[i][j];
+					vote_cell[6]=(1-(anglepixel[i][j]-(-50))/20)*mag[i][j];
+				}
+				else if(anglepixel[i][j]<-50&&anglepixel[i][j]>=-70) {
+					vote_cell[6]=(1-(-50-anglepixel[i][j])/20)*mag[i][j];
+					vote_cell[5]=(1-(anglepixel[i][j]-(-70))/20)*mag[i][j];
+				}
+				else if(anglepixel[i][j]<=-90&&anglepixel[i][j]>=-70) {
+					vote_cell[5]=(1-(-70-anglepixel[i][j])/20)*mag[i][j];
+					vote_cell[4]=(1-(anglepixel[i][j]-(-90))/20)*mag[i][j];
+				}
+			}
+		}
+	}
+}
+
