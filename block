@@ -1,0 +1,61 @@
+package project2;
+
+public class block {
+	double[] histogram=new double[36];
+	double[] cellH1=new double[9];
+	double[] cellH2=new double[9];
+	double[] cellH3=new double[9];
+	double[] cellH4=new double[9];
+	
+	void setCellHistogram1(double[] a){   //assign value of four cells to block 
+		for(int i=0;i<9;i++){ 
+			cellH1[i]=a[i];
+		}
+	}
+	void setCellHistogram2(double[] a){
+		for(int i=0;i<9;i++){ 
+			cellH2[i]=a[i];
+		}
+	}
+	void setCellHistogram3(double[] a){
+		for(int i=0;i<9;i++){ 
+			cellH3[i]=a[i];
+		}
+	}
+	void setCellHistogram4(double[] a){
+		for(int i=0;i<9;i++){ 
+			cellH4[i]=a[i];
+		}
+	}
+	
+	void setHistogram(){     //assign value of four cells to block 
+		int n=0,o=0,p=0,q=0;
+		for(int i=0;i<9;i++){    
+			histogram[i]=cellH1[n];
+			n++;
+		}
+		for(int i=9;i<18;i++){    
+			histogram[i]=cellH2[o];
+			o++;
+		}
+		for(int i=18;i<27;i++){    
+			histogram[i]=cellH3[p];
+			p++;
+		}
+		for(int i=27;i<36;i++){    
+			histogram[i]=cellH4[q];
+			q++;
+		}
+	}
+	void norm(){     //Use L2 norm for block normalization.
+		double sum=0.0;
+		for(int i=0;i<36;i++){
+			sum=sum+histogram[i]*histogram[i];
+		}
+		if(Math.sqrt(sum)>0){
+			for(int i=0;i<36;i++){
+				histogram[i]=histogram[i]/Math.sqrt(sum);
+			}
+		}
+	}
+}
