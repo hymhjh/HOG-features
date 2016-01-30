@@ -1,0 +1,518 @@
+package project2;
+
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.PrintStream;
+
+import javax.imageio.ImageIO;
+
+import project2.divides;
+import project2.divides;
+
+public class output {
+
+	public static void main(String[] args) throws IOException{			
+		
+		//positive training sample.
+		outputimage[] p=new outputimage[10];
+		for(int aa=0;aa<10;aa++){
+			p[aa]=new outputimage();
+		}
+		p[0].name="crop001030c.bmp";
+		p[1].name="crop001034b.bmp";
+		p[2].name="crop001063b.bmp";
+		p[3].name="crop001070a.bmp";
+		p[4].name="crop001275b.bmp";
+		p[5].name="crop001278a.bmp";
+		p[6].name="crop001500b.bmp";
+		p[7].name="crop001672b.bmp";
+		p[8].name="person_and_bike_026a.bmp";
+		p[9].name="person_and_bike_151a.bmp";
+		
+		divides[] pd=new divides[10];
+		for(int aa=0;aa<10;aa++){
+			pd[aa]=new divides();
+		}
+		pd[0].names="crop001030c.bmp";
+		pd[1].names="crop001034b.bmp";
+		pd[2].names="crop001063b.bmp";
+		pd[3].names="crop001070a.bmp";
+		pd[4].names="crop001275b.bmp";
+		pd[5].names="crop001278a.bmp";
+		pd[6].names="crop001500b.bmp";
+		pd[7].names="crop001672b.bmp";
+		pd[8].names="person_and_bike_026a.bmp";
+		pd[9].names="person_and_bike_151a.bmp";
+		
+		for(int m=0;m<10;m++){
+			p[m].setpixels();
+			p[m].magnitude();
+			p[m].angle();
+
+			pd[m].set(p[m].height,p[m].width);
+			pd[m].setmagnitudes(p[m].mpixels,p[m].width,p[m].height);
+			pd[m].setangles(p[m].angle,p[m].width,p[m].height);
+			pd[m].divAndPrint();
+			for(int j=0;j<((128*64)/64);j++){
+				pd[m].cell[j].sortcells();
+				pd[m].cell[j].sortmag();
+				pd[m].cell[j].sortangles();
+				pd[m].cell[j].calculate_vote();
+			}
+			
+			int indexn=0;//divide as block
+			for(int p1=0;p1<15;p1++){
+				for(int k=0;k<7;k++){
+					pd[m].nb[indexn]=new block();
+					pd[m].nb[indexn].setCellHistogram1(pd[m].cell[indexn+p1].vote_cell);
+					pd[m].nb[indexn].setCellHistogram2(pd[m].cell[indexn+1+p1].vote_cell);
+					pd[m].nb[indexn].setCellHistogram3(pd[m].cell[indexn+8+p1].vote_cell);
+					pd[m].nb[indexn].setCellHistogram4(pd[m].cell[indexn+9+p1].vote_cell);
+					pd[m].nb[indexn].setHistogram();
+					pd[m].nb[indexn].norm();
+					indexn++;
+				}
+			}
+		}
+		
+		//output 2 positive(training)
+		FileOutputStream fs1p = new FileOutputStream(new File("crop001030c.txt"));
+		PrintStream fourp = new PrintStream(fs1p);
+				fourp.println(pd[0].names);
+				for(int a1=0;a1<105;a1++){
+					fourp.println();
+					for(int a2=0;a2<36;a2++){
+					fourp.print(String.format("%1$.2f", pd[0].nb[a1].histogram[a2])+" ");
+					}
+				}
+		fourp.close();
+		FileOutputStream fs2p = new FileOutputStream(new File("crop001034b.txt"));
+		PrintStream fourp2 = new PrintStream(fs2p);
+				fourp2.println(pd[1].names);
+				for(int a1=0;a1<105;a1++){
+					fourp2.println();
+					for(int a2=0;a2<36;a2++){
+					fourp2.print(String.format("%1$.2f", pd[1].nb[a1].histogram[a2])+" ");
+					}
+				}
+		fourp2.close();
+		
+		double[] pAverage=new double[3780];//the mean descriptor for the positive samples
+		double[] sum1=new double[3780];
+		int aa0=0;
+		for(int a1=0;a1<105;a1++){
+			for(int a2=0;a2<36;a2++){
+				sum1[aa0]=pd[0].nb[a1].histogram[a2]+pd[1].nb[a1].histogram[a2]+pd[2].nb[a1].histogram[a2]+pd[3].nb[a1].histogram[a2]+pd[4].nb[a1].histogram[a2]+pd[5].nb[a1].histogram[a2]+pd[6].nb[a1].histogram[a2]+pd[7].nb[a1].histogram[a2]+pd[8].nb[a1].histogram[a2]+pd[9].nb[a1].histogram[a2];
+				pAverage[aa0]=sum1[aa0]/10.0;
+				aa0++;
+			}
+		}
+		
+		
+		
+		//negative training sample.
+		outputimage[] n=new outputimage[10];
+		for(int aa=0;aa<10;aa++){
+			n[aa]=new outputimage();
+		}
+		n[0].name="01-03e_cut.bmp";
+		n[1].name="00000003a_cut.bmp";
+		n[2].name="00000057a_cut.bmp";
+		n[3].name="00000090a_cut.bmp";
+		n[4].name="00000091a_cut.bmp";
+		n[5].name="00000118a_cut.bmp";
+		n[6].name="no_person__no_bike_219_cut.bmp";
+		n[7].name="no_person__no_bike_258_Cut.bmp";
+		n[8].name="no_person__no_bike_259_cut.bmp";
+		n[9].name="no_person__no_bike_264_cut.bmp";
+		
+		divides[] nd=new divides[10];
+		for(int aa=0;aa<10;aa++){
+			nd[aa]=new divides();
+		}
+		nd[0].names="01-03e_cut.bmp";
+		nd[1].names="00000003a_cut.bmp";
+		nd[2].names="00000057a_cut.bmp";
+		nd[3].names="00000090a_cut.bmp";
+		nd[4].names="00000091a_cut.bmp";
+		nd[5].names="00000118a_cut.bmp";
+		nd[6].names="no_person__no_bike_219_cut.bmp";
+		nd[7].names="no_person__no_bike_258_Cut.bmp";
+		nd[8].names="no_person__no_bike_259_cut.bmp";
+		nd[9].names="no_person__no_bike_264_cut.bmp";
+		
+		for(int m=0;m<10;m++){
+			n[m].setpixels();
+			n[m].magnitude();
+			n[m].angle();
+			
+			nd[m].set(n[m].height,n[m].width);
+			nd[m].setmagnitudes(n[m].mpixels,n[m].width,n[m].height);
+			nd[m].setangles(n[m].angle,n[m].width,n[m].height);
+			nd[m].divAndPrint();
+			for(int j=0;j<((128*64)/64);j++){
+				nd[m].cell[j].sortcells();
+				nd[m].cell[j].sortmag();
+				nd[m].cell[j].sortangles();
+				nd[m].cell[j].calculate_vote();
+			}
+			
+			int indexn=0;//divide as block
+			for(int p1=0;p1<15;p1++){
+				for(int k=0;k<7;k++){
+					nd[m].nb[indexn]=new block();
+					nd[m].nb[indexn].setCellHistogram1(nd[m].cell[indexn+p1].vote_cell);
+					nd[m].nb[indexn].setCellHistogram2(nd[m].cell[indexn+1+p1].vote_cell);
+					nd[m].nb[indexn].setCellHistogram3(nd[m].cell[indexn+8+p1].vote_cell);
+					nd[m].nb[indexn].setCellHistogram4(nd[m].cell[indexn+9+p1].vote_cell);
+					nd[m].nb[indexn].setHistogram();
+					nd[m].nb[indexn].norm();
+					indexn++;
+				}
+			}
+		}
+		
+		//output 2 negative(training)
+		FileOutputStream fs1n = new FileOutputStream(new File("00000003a_cut.txt"));
+		PrintStream fourn = new PrintStream(fs1n);
+				fourn.println(nd[1].names);
+				for(int a1=0;a1<105;a1++){
+					fourn.println();
+					for(int a2=0;a2<36;a2++){
+					fourn.print(String.format("%1$.2f", nd[1].nb[a1].histogram[a2])+" ");
+					}
+				}
+		fourn.close();
+		FileOutputStream fs2n = new FileOutputStream(new File("00000057a_cut.txt"));
+		PrintStream fourn2 = new PrintStream(fs2n);
+				fourn2.println(nd[2].names);
+				for(int a1=0;a1<105;a1++){
+					fourn2.println();
+					for(int a2=0;a2<36;a2++){
+					fourn2.print(String.format("%1$.2f", nd[2].nb[a1].histogram[a2])+" ");
+					}
+				}
+		fourn2.close();
+		
+		
+		double[] nAverage=new double[3780];//the mean descriptor for the negative samples
+		double[] sum0=new double[3780];
+		int a0=0;
+		for(int a1=0;a1<105;a1++){
+			for(int a2=0;a2<36;a2++){
+				sum0[a0]=nd[0].nb[a1].histogram[a2]+nd[1].nb[a1].histogram[a2]+nd[2].nb[a1].histogram[a2]+nd[3].nb[a1].histogram[a2]+nd[4].nb[a1].histogram[a2]+nd[5].nb[a1].histogram[a2]+nd[6].nb[a1].histogram[a2]+nd[7].nb[a1].histogram[a2]+nd[8].nb[a1].histogram[a2]+nd[9].nb[a1].histogram[a2];
+				nAverage[a0]=sum0[a0]/10.0;
+				a0++;
+			}
+		}
+		
+		
+		//output average descriptor for positive samples.
+		FileOutputStream fs = new FileOutputStream(new File("posi_ave.txt"));
+		PrintStream posi = new PrintStream(fs);    
+		for(int po=0;po<3780;po++){
+			if((po%36)==0) posi.println();
+			posi.print(String.format("%1$.2f", pAverage[po])+" ");
+		}
+		posi.close();
+		
+		//output average descriptor for negative samples.
+		FileOutputStream fsn = new FileOutputStream(new File("nega_ave.txt"));
+		PrintStream nega = new PrintStream(fsn);    
+		for(int ne=0;ne<3780;ne++){
+			if((ne%36)==0) nega.println();
+				nega.print(String.format("%1$.2f", nAverage[ne])+" ");
+			}
+		nega.close();
+		
+		//compute the Euclidean distance of positive training samples.
+		double[] dis_p=new double[10];
+		for(int id=0;id<10;id++){
+			int pDis=0;
+			double squ=0,sump=0;
+			for(int a1=0;a1<105;a1++){
+				for(int a2=0;a2<36;a2++){
+					squ=pd[id].nb[a1].histogram[a2]-pAverage[pDis];
+					squ=squ*squ;
+					sump=squ+sump;
+					pDis++;
+				}
+			}
+			dis_p[id]=Math.sqrt(sump);
+		}
+		
+		double[] dis_n=new double[10];
+		for(int id=0;id<10;id++){
+			int pDis=0;
+			double snu=0,sumn=0;
+			for(int a1=0;a1<105;a1++){
+				for(int a2=0;a2<36;a2++){
+					snu=nd[id].nb[a1].histogram[a2]-nAverage[pDis];
+					snu=snu*snu;
+					sumn=snu+sumn;
+					pDis++;
+				}
+			}
+			dis_n[id]=Math.sqrt(sumn);
+		}
+		//output distance.
+		FileOutputStream dis = new FileOutputStream(new File("distance.txt"));
+		PrintStream dis0 = new PrintStream(dis);
+		dis0.println("positive_distance");
+		for(int id=0;id<10;id++){
+			dis0.println(pd[id].names+":"+dis_p[id]);
+		}
+		dis0.println();
+		dis0.println("negative_distance");
+		for(int id=0;id<10;id++){
+			dis0.println(nd[id].names+":"+dis_n[id]);
+		}
+		dis.close();
+		
+		//Error-Correcting:human class1, non-human class2; order 1-10
+		double[] W=new double[3781];
+		double alpha=0.4;
+		for(int x=0;x<3781;x++){
+			W[x]=0.5;
+		}
+		int interation=0;
+		for(int count=0;count<100;count++){
+			int z=0,zn=0;
+			for(int id=0;id<10;id++){
+				int x=0;
+				double sum=0;
+				for(int a1=0;a1<105;a1++){
+					for(int a2=0;a2<36;a2++){
+						sum=sum+pd[id].nb[a1].histogram[a2]*W[x];
+						x++;
+					}
+				}
+				sum=sum+W[3780];
+				if(sum<=0) {
+					int y=0;
+					z++;
+					for(int a3=0;a3<105;a3++){
+						for(int a4=0;a4<36;a4++){
+							W[y]=W[y]+alpha*pd[id].nb[a3].histogram[a4];
+							y++;
+						}
+					}
+					W[3780]=W[3780]+alpha;
+				}
+			}
+		
+			for(int id=0;id<10;id++){
+				int x=0;
+				double sum=0;
+				for(int a1=0;a1<105;a1++){
+					for(int a2=0;a2<36;a2++){
+						sum=sum+nd[id].nb[a1].histogram[a2]*W[x];
+						x++;
+					}
+				}
+				sum=sum+W[3780];
+				if(sum>=0) {
+					int y=0;
+					zn++;
+					for(int a3=0;a3<105;a3++){
+						for(int a4=0;a4<36;a4++){
+							W[y]=W[y]-alpha*nd[id].nb[a3].histogram[a4];
+							y++;
+						}
+					}
+					W[3780]=W[3780]+alpha;
+				}
+			}
+			if((z==0)&&(zn==0)) {
+				interation=count;
+				count=100;
+			}
+		}
+		
+		//output the learning rate α, order of training samples,the number of iterations through the training samples
+		FileOutputStream out = new FileOutputStream(new File("learning rate and other.txt"));
+		PrintStream rate = new PrintStream(out);
+		rate.println("learning rate α"+":"+alpha);
+		rate.println("number of iteration:"+interation);
+		rate.println("order:");
+		for(int ab=0;ab<10;ab++){
+			rate.println(pd[ab].names);
+		}
+		for(int ab=0;ab<10;ab++){
+			rate.println(nd[ab].names);
+		}
+		rate.close();
+		
+		//testing positive samples.
+		outputimage[] pt=new outputimage[5];
+		for(int aa=0;aa<5;aa++){
+			pt[aa]=new outputimage();
+		}
+		pt[0].name="crop_000010b.bmp";
+		pt[1].name="crop001008b.bmp";
+		pt[2].name="crop001028a.bmp";
+		pt[3].name="crop001045b.bmp";
+		pt[4].name="crop001047b.bmp";
+		
+		divides[] pdt=new divides[5];
+		for(int aa=0;aa<5;aa++){
+			pdt[aa]=new divides();
+		}
+		pdt[0].names="crop_000010b.bmp";
+		pdt[1].names="crop001008b.bmp";
+		pdt[2].names="crop001028a.bmp";
+		pdt[3].names="crop001045b.bmp";
+		pdt[4].names="crop001047b.bmp";
+		
+		for(int m=0;m<5;m++){
+			pt[m].setpixels();
+			pt[m].magnitude();
+			pt[m].angle();
+
+			pdt[m].set(pt[m].height,pt[m].width);
+			pdt[m].setmagnitudes(pt[m].mpixels,pt[m].width,pt[m].height);
+			pdt[m].setangles(pt[m].angle,pt[m].width,pt[m].height);
+			pdt[m].divAndPrint();
+			for(int j=0;j<((128*64)/64);j++){
+				pdt[m].cell[j].sortcells();
+				pdt[m].cell[j].sortmag();
+				pdt[m].cell[j].sortangles();
+				pdt[m].cell[j].calculate_vote();
+			}
+			
+			int indexn=0;//divide as block
+			for(int p1=0;p1<15;p1++){
+				for(int k=0;k<7;k++){
+					pdt[m].nb[indexn]=new block();
+					pdt[m].nb[indexn].setCellHistogram1(pdt[m].cell[indexn+p1].vote_cell);
+					pdt[m].nb[indexn].setCellHistogram2(pdt[m].cell[indexn+1+p1].vote_cell);
+					pdt[m].nb[indexn].setCellHistogram3(pdt[m].cell[indexn+8+p1].vote_cell);
+					pdt[m].nb[indexn].setCellHistogram4(pdt[m].cell[indexn+9+p1].vote_cell);
+					pdt[m].nb[indexn].setHistogram();
+					pdt[m].nb[indexn].norm();
+					indexn++;
+				}
+			}
+		}
+		
+		//output crop001008b.bmp
+		FileOutputStream fs1pt = new FileOutputStream(new File("crop001008b.txt"));
+		PrintStream fourpt = new PrintStream(fs1pt);
+				fourpt.println(pdt[1].names);
+				for(int a1=0;a1<105;a1++){
+					fourpt.println();
+					for(int a2=0;a2<36;a2++){
+					fourpt.print(String.format("%1$.2f", pdt[1].nb[a1].histogram[a2])+" ");
+					}
+				}			
+				fourpt.close();
+		
+		
+		//testing negative samples. 
+		outputimage[] nt=new outputimage[5];
+		for(int aa=0;aa<5;aa++){
+			nt[aa]=new outputimage();
+		}
+		nt[0].name="00000053a_cut1.bmp";
+		nt[1].name="00000062a_cut2.bmp";
+		nt[2].name="00000093a_cut3.bmp";
+		nt[3].name="no_person__no_bike_213_cut4.bmp";
+		nt[4].name="no_person__no_bike_247_cut5.bmp";	
+		
+		divides[] ndt=new divides[5];
+		for(int aa=0;aa<5;aa++){
+			ndt[aa]=new divides();
+		}
+		ndt[0].names="00000053a_cut1.bmp";
+		ndt[1].names="00000062a_cut2.bmp";
+		ndt[2].names="00000093a_cut3.bmp";
+		ndt[3].names="no_person__no_bike_213_cut4.bmp";
+		ndt[4].names="no_person__no_bike_247_cut5.bmp";
+		
+		for(int m=0;m<5;m++){
+			nt[m].setpixels();
+			nt[m].magnitude();
+			nt[m].angle();
+			
+			ndt[m].set(nt[m].height,nt[m].width);
+			ndt[m].setmagnitudes(nt[m].mpixels,nt[m].width,nt[m].height);
+			ndt[m].setangles(nt[m].angle,nt[m].width,nt[m].height);
+			ndt[m].divAndPrint();
+			for(int j=0;j<((128*64)/64);j++){
+				ndt[m].cell[j].sortcells();
+				ndt[m].cell[j].sortmag();
+				ndt[m].cell[j].sortangles();
+				ndt[m].cell[j].calculate_vote();
+			}
+			
+			int indexn=0;//divide as block
+			for(int p1=0;p1<15;p1++){
+				for(int k=0;k<7;k++){
+					ndt[m].nb[indexn]=new block();
+					ndt[m].nb[indexn].setCellHistogram1(ndt[m].cell[indexn+p1].vote_cell);
+					ndt[m].nb[indexn].setCellHistogram2(ndt[m].cell[indexn+1+p1].vote_cell);
+					ndt[m].nb[indexn].setCellHistogram3(ndt[m].cell[indexn+8+p1].vote_cell);
+					ndt[m].nb[indexn].setCellHistogram4(ndt[m].cell[indexn+9+p1].vote_cell);
+					ndt[m].nb[indexn].setHistogram();
+					ndt[m].nb[indexn].norm();
+					indexn++;
+				}
+			}
+		}
+		//output 00000053a_cut1.bmp.
+		FileOutputStream fs1nt = new FileOutputStream(new File("00000053a_cut1.txt"));
+		PrintStream fournt = new PrintStream(fs1nt);
+				fournt.println(ndt[0].names);
+				for(int a1=0;a1<105;a1++){
+					fournt.println();
+					for(int a2=0;a2<36;a2++){
+					fournt.print(String.format("%1$.2f", ndt[0].nb[a1].histogram[a2])+" ");
+					}
+				}			
+				fournt.close();
+		
+		//classification
+		FileOutputStream cl = new FileOutputStream(new File("classification.txt"));
+		PrintStream classify = new PrintStream(cl);
+		for(int co=0;co<5;co++){
+			int x=0;
+			double sum=0;
+			for(int a1=0;a1<105;a1++){
+				for(int a2=0;a2<36;a2++){
+					sum=sum+pdt[co].nb[a1].histogram[a2]*W[x];
+					x++;
+				}
+				sum=sum+W[3780];
+			}
+			if(sum>0) classify.println(co+" "+pdt[co].names+":"+"human");
+			else classify.println(co+" "+pdt[co].names+":"+"non-human");
+		}
+		for(int id=0;id<5;id++){
+			int x=0;
+			double sumn=0;
+			for(int a1=0;a1<105;a1++){
+				for(int a2=0;a2<36;a2++){
+					sumn=sumn+ndt[id].nb[a1].histogram[a2]*W[x];
+					x++;
+				}
+			}
+			sumn=sumn+W[3780];
+			if(sumn<0) classify.println(id+" "+nd[id].names+":"+"non-human");
+			else classify.println(id+" "+nd[id].names+":"+"human");
+		}
+		
+		classify.close();
+		
+		//output the initial W.
+		FileOutputStream W1 = new FileOutputStream(new File("W.txt"));
+		PrintStream w = new PrintStream(W1);
+		for(int ab=0;ab<3781;ab++){
+			if(ab%25==0) w.println();
+			w.print(String.format("%1$.2f", W[ab])+" ");
+		}
+		w.close();
+   }
+}
+
